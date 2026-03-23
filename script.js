@@ -97,8 +97,9 @@ function resetTimer(){
 clearInterval(timer);
 
 isRunning=false;
-remainingTime=0;
-progressBar.style.width="0%";
+remainingTime = 0;
+totalTime = 0;
+progressBar.style.width = "0%";
 
 currentSession=1;
 isWork=true;
@@ -119,9 +120,9 @@ history.appendChild(li);
 
 }
 
-document.getElementById("start").onclick=startTimer;
-document.getElementById("pause").onclick=pauseTimer;
-document.getElementById("reset").onclick=resetTimer;
+document.getElementById("start").addEventListener("click", startTimer);
+document.getElementById("pause").addEventListener("click", pauseTimer);
+document.getElementById("reset").addEventListener("click", resetTimer);
 
 updateDisplay();
 
