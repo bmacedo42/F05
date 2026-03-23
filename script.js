@@ -13,13 +13,16 @@ const history = document.getElementById("history");
 
 function updateDisplay() {
 
+if(!totalTime) return;
+
 let minutes = Math.floor(remainingTime / 60);
 let seconds = remainingTime % 60;
 
 timeDisplay.textContent =
 `${minutes.toString().padStart(2,"0")}:${seconds.toString().padStart(2,"0")}`;
 
-let progress = ((totalTime - remainingTime) / totalTime) * 100;
+let progress = (1 - remainingTime / totalTime) * 100;
+
 progressBar.style.width = progress + "%";
 }
 
@@ -27,15 +30,18 @@ function startTimer(){
 
 if(isRunning) return;
 
-if(!remainingTime){
-
 const work = document.getElementById("workTime").value * 60;
 const breakT = document.getElementById("breakTime").value * 60;
 
 totalSessions = document.getElementById("sessions").value;
 
+if(!remainingTime){
+
 totalTime = isWork ? work : breakT;
 remainingTime = totalTime;
+
+progressBar.style.width = "0%";
+
 }
 
 isRunning = true;

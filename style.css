@@ -34,7 +34,6 @@ overflow:hidden;
 height:100%;
 width:0%;
 background:#4caf50;
-transition:width 1s linear;
 }
 
 button{
