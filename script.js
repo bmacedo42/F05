@@ -1,8 +1,12 @@
 let workTime = prompt("Tempo de trabalho (minutos):", 25);
 let breakTime = prompt("Tempo de descanso (minutos):", 5);
+let sessions = prompt("Número de sessões:", 4);
 
 workTime = parseInt(workTime) * 60;
 breakTime = parseInt(breakTime) * 60;
+sessions = parseInt(sessions);
+
+let currentSession = 1;
 
 let timeLeft = workTime;
 let totalTime = workTime;
@@ -44,17 +48,30 @@ function timer() {
     updateDisplay();
     updateProgress();
   } else {
+    // terminou um ciclo
     if (isWork) {
-      alert("Tempo de descanso!");
+      alert("Descanso!");
       timeLeft = breakTime;
       totalTime = breakTime;
     } else {
-      alert("Tempo de trabalho!");
+      currentSession++;
+
+      if (currentSession > sessions) {
+        alert("Terminaste todas as sessões!");
+        clearInterval(interval);
+        return;
+      }
+
+      alert("Nova sessão de trabalho!");
       timeLeft = workTime;
       totalTime = workTime;
     }
 
     isWork = !isWork;
+
+    // 🔥 IMPORTANTE (corrige a barra)
+    progressBar.style.width = "0%";
+    updateDisplay();
   }
 }
 
@@ -62,13 +79,15 @@ function resetTimer() {
   clearInterval(interval);
   isRunning = false;
 
+  currentSession = 1;
   isWork = true;
+
   timeLeft = workTime;
   totalTime = workTime;
 
-  updateDisplay();
   progressBar.style.width = "0%";
+  updateDisplay();
 }
 
-// iniciar display
+// inicializar
 updateDisplay();
