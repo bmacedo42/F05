@@ -1,30 +1,27 @@
-let workTime = prompt("Tempo de trabalho (minutos):", 25);
-let breakTime = prompt("Tempo de descanso (minutos):", 5);
-let sessions = prompt("Número de sessões:", 4);
-
-workTime = parseInt(workTime) * 60;
-breakTime = parseInt(breakTime) * 60;
-sessions = parseInt(sessions);
+let workTime = parseInt(prompt("Tempo de trabalho (min):", 25)) * 60;
+let breakTime = parseInt(prompt("Tempo de descanso (min):", 5)) * 60;
+let sessions = parseInt(prompt("Número de sessões:", 4));
 
 let currentSession = 1;
-
 let timeLeft = workTime;
 let totalTime = workTime;
 
 let isRunning = false;
 let isWork = true;
-let interval = null;
+let interval;
 
 const timerDisplay = document.getElementById("timer");
 const progressBar = document.getElementById("progress-bar");
+const sessionInfo = document.getElementById("sessionInfo");
+const historyList = document.getElementById("history");
 
 function updateDisplay() {
-  let minutes = Math.floor(timeLeft / 60);
-  let seconds = timeLeft % 60;
+  let m = Math.floor(timeLeft / 60);
+  let s = timeLeft % 60;
+  s = s < 10 ? "0" + s : s;
 
-  seconds = seconds < 10 ? "0" + seconds : seconds;
-
-  timerDisplay.textContent = `${minutes}:${seconds}`;
+  timerDisplay.textContent = `${m}:${s}`;
+  sessionInfo.textContent = `Sessão ${currentSession} de ${sessions}`;
 }
 
 function updateProgress() {
@@ -48,7 +45,7 @@ function timer() {
     updateDisplay();
     updateProgress();
   } else {
-    // terminou um ciclo
+
     if (isWork) {
       alert("Descanso!");
       timeLeft = breakTime;
@@ -57,27 +54,49 @@ function timer() {
       currentSession++;
 
       if (currentSession > sessions) {
-        alert("Terminaste todas as sessões!");
-        clearInterval(interval);
+        finishPomodoro();
         return;
       }
 
-      alert("Nova sessão de trabalho!");
+      alert("Nova sessão!");
       timeLeft = workTime;
       totalTime = workTime;
     }
 
     isWork = !isWork;
-
-    // 🔥 IMPORTANTE (corrige a barra)
     progressBar.style.width = "0%";
     updateDisplay();
   }
 }
 
+function finishPomodoro() {
+  clearInterval(interval);
+  alert("Terminaste!");
+
+  let now = new Date();
+  let record = `${now.toLocaleString()} - ${sessions} sessões`;
+
+  let history = JSON.parse(localStorage.getItem("history")) || [];
+  history.push(record);
+  localStorage.setItem("history", JSON.stringify(history));
+
+  loadHistory();
+}
+
+function loadHistory() {
+  historyList.innerHTML = "";
+
+  let history = JSON.parse(localStorage.getItem("history")) || [];
+
+  history.forEach(item => {
+    let li = document.createElement("li");
+    li.textContent = item;
+    historyList.appendChild(li);
+  });
+}
+
 function resetTimer() {
   clearInterval(interval);
-  isRunning = false;
 
   currentSession = 1;
   isWork = true;
@@ -89,5 +108,10 @@ function resetTimer() {
   updateDisplay();
 }
 
-// inicializar
 updateDisplay();
+loadHistory();
+
+// SERVICE WORKER
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js");
+}
