@@ -1,33 +1,50 @@
 body{
-    font-family: Arial;
-    text-align: center;
-    margin-top: 50px;
+font-family: Arial;
+text-align:center;
+background:#f5f5f5;
 }
 
-#timer{
-    font-size: 60px;
-    margin: 20px;
+.settings{
+margin:20px;
+}
+
+input{
+width:60px;
+margin:5px;
+}
+
+.timer{
+margin:30px;
+}
+
+#time{
+font-size:48px;
 }
 
 .progress-container{
-
-    width: 80%;
-    height: 30px;
-    background: #ddd;
-    margin: auto;
-    border-radius: 10px;
-    overflow: hidden;
+width:80%;
+height:20px;
+background:#ddd;
+margin:20px auto;
+border-radius:10px;
+overflow:hidden;
 }
 
-#progress-bar{
-
-    height: 100%;
-    width: 0%;
-    bacground: green;
+#progress{
+height:100%;
+width:0%;
+background:#4caf50;
+transition:width 1s linear;
 }
 
 button{
-    padding: 10px 20px;
-    margin: 10px;
-    font-size: 16px;
+padding:10px 20px;
+margin:10px;
+font-size:16px;
+cursor:pointer;
+}
+
+ul{
+list-style:none;
+padding:0;
 }

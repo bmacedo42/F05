@@ -1,28 +1,46 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pomodoro Timer</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pomodoro Timer</title>
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-    <h1>Pomodoro Timer</h1>
+<h1>Pomodoro Timer</h1>
 
-    <div id="timer">00:00</div>
+<div class="settings">
+<label>Tempo de Trabalho (min):</label>
+<input type="number" id="workTime" value="25">
 
-    <div class="progress-container">
-        <div id="progress-bar"></div>
-    </div>
+<label>Tempo de Descanso (min):</label>
+<input type="number" id="breakTime" value="5">
 
-    <button onclick="startPause()">Start / Pause</button>
-    <button onclick="resetTimer()">Reset</button>
+<label>Nº de Sessões:</label>
+<input type="number" id="sessions" value="4">
+</div>
 
-    <h2>Histórico</h2>
-    <ul id="history"></ul>
+<div class="timer">
+<h2 id="time">00:00</h2>
 
-    <script src="script.js"></script>
-    
+<div class="progress-container">
+<div id="progress"></div>
+</div>
+</div>
+
+<div class="buttons">
+<button id="start">Iniciar</button>
+<button id="pause">Pausar</button>
+<button id="reset">Reset</button>
+</div>
+
+<h3>Histórico</h3>
+<ul id="history"></ul>
+
+<script src="app.js"></script>
+
 </body>
 </html>

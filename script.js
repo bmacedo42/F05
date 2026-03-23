@@ -1,117 +1,126 @@
-let workTime = parseInt(prompt("Tempo de trabalho (min):", 25)) * 60;
-let breakTime = parseInt(prompt("Tempo de descanso (min):", 5)) * 60;
-let sessions = parseInt(prompt("Número de sessões:", 4));
+let timer;
+let totalTime;
+let remainingTime;
+let isRunning = false;
 
 let currentSession = 1;
-let timeLeft = workTime;
-let totalTime = workTime;
-
-let isRunning = false;
+let totalSessions;
 let isWork = true;
-let interval;
 
-const timerDisplay = document.getElementById("timer");
-const progressBar = document.getElementById("progress-bar");
-const sessionInfo = document.getElementById("sessionInfo");
-const historyList = document.getElementById("history");
+const timeDisplay = document.getElementById("time");
+const progressBar = document.getElementById("progress");
+const history = document.getElementById("history");
 
 function updateDisplay() {
-  let m = Math.floor(timeLeft / 60);
-  let s = timeLeft % 60;
-  s = s < 10 ? "0" + s : s;
 
-  timerDisplay.textContent = `${m}:${s}`;
-  sessionInfo.textContent = `Sessão ${currentSession} de ${sessions}`;
+let minutes = Math.floor(remainingTime / 60);
+let seconds = remainingTime % 60;
+
+timeDisplay.textContent =
+`${minutes.toString().padStart(2,"0")}:${seconds.toString().padStart(2,"0")}`;
+
+let progress = ((totalTime - remainingTime) / totalTime) * 100;
+progressBar.style.width = progress + "%";
 }
 
-function updateProgress() {
-  let percent = ((totalTime - timeLeft) / totalTime) * 100;
-  progressBar.style.width = percent + "%";
+function startTimer(){
+
+if(isRunning) return;
+
+if(!remainingTime){
+
+const work = document.getElementById("workTime").value * 60;
+const breakT = document.getElementById("breakTime").value * 60;
+
+totalSessions = document.getElementById("sessions").value;
+
+totalTime = isWork ? work : breakT;
+remainingTime = totalTime;
 }
 
-function startPause() {
-  if (isRunning) {
-    clearInterval(interval);
-    isRunning = false;
-  } else {
-    interval = setInterval(timer, 1000);
-    isRunning = true;
-  }
-}
+isRunning = true;
 
-function timer() {
-  if (timeLeft > 0) {
-    timeLeft--;
-    updateDisplay();
-    updateProgress();
-  } else {
+timer = setInterval(()=>{
 
-    if (isWork) {
-      alert("Descanso!");
-      timeLeft = breakTime;
-      totalTime = breakTime;
-    } else {
-      currentSession++;
-
-      if (currentSession > sessions) {
-        finishPomodoro();
-        return;
-      }
-
-      alert("Nova sessão!");
-      timeLeft = workTime;
-      totalTime = workTime;
-    }
-
-    isWork = !isWork;
-    progressBar.style.width = "0%";
-    updateDisplay();
-  }
-}
-
-function finishPomodoro() {
-  clearInterval(interval);
-  alert("Terminaste!");
-
-  let now = new Date();
-  let record = `${now.toLocaleString()} - ${sessions} sessões`;
-
-  let history = JSON.parse(localStorage.getItem("history")) || [];
-  history.push(record);
-  localStorage.setItem("history", JSON.stringify(history));
-
-  loadHistory();
-}
-
-function loadHistory() {
-  historyList.innerHTML = "";
-
-  let history = JSON.parse(localStorage.getItem("history")) || [];
-
-  history.forEach(item => {
-    let li = document.createElement("li");
-    li.textContent = item;
-    historyList.appendChild(li);
-  });
-}
-
-function resetTimer() {
-  clearInterval(interval);
-
-  currentSession = 1;
-  isWork = true;
-
-  timeLeft = workTime;
-  totalTime = workTime;
-
-  progressBar.style.width = "0%";
-  updateDisplay();
-}
+remainingTime--;
 
 updateDisplay();
-loadHistory();
 
-// SERVICE WORKER
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("service-worker.js");
+if(remainingTime <= 0){
+
+clearInterval(timer);
+isRunning = false;
+
+if(isWork){
+
+if(currentSession <= totalSessions){
+
+logSession();
+
+isWork = false;
+remainingTime = 0;
+startTimer();
+
+}
+
+}else{
+
+isWork = true;
+currentSession++;
+
+remainingTime = 0;
+
+if(currentSession <= totalSessions){
+startTimer();
+}
+
+}
+
+}
+
+},1000);
+}
+
+function pauseTimer(){
+clearInterval(timer);
+isRunning=false;
+}
+
+function resetTimer(){
+
+clearInterval(timer);
+
+isRunning=false;
+remainingTime=0;
+progressBar.style.width="0%";
+
+currentSession=1;
+isWork=true;
+
+updateDisplay();
+}
+
+function logSession(){
+
+let li=document.createElement("li");
+
+let now=new Date();
+
+li.textContent =
+`Sessão ${currentSession} concluída - ${now.toLocaleString()}`;
+
+history.appendChild(li);
+
+}
+
+document.getElementById("start").onclick=startTimer;
+document.getElementById("pause").onclick=pauseTimer;
+document.getElementById("reset").onclick=resetTimer;
+
+updateDisplay();
+
+
+if("serviceWorker" in navigator){
+navigator.serviceWorker.register("service-worker.js")
+.then(()=>console.log("Service Worker registado"));
 }
